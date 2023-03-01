@@ -6,7 +6,7 @@ using System.Web;
 
 namespace MonoTest.MVC.DAL
 {
-    public class VehicleInitializer:System.Data.Entity.DropCreateDatabaseIfModelChanges<VehicleContext>
+    public class VehicleInitializer:System.Data.Entity. DropCreateDatabaseIfModelChanges<VehicleContext>
     {
         protected override void Seed(VehicleContext context)
         {
