@@ -1,31 +1,31 @@
-﻿@model PagedList.IPagedList<MonoTest.MVC.Models.ViewModels.VehicleMakeVM>
+﻿@model PagedList.IPagedList<MonoTest.MVC.Models.ViewModels.VehicleModelVM>
 @using PagedList.Mvc;
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
-    ViewBag.Title = "VehicleMakes";
+    ViewBag.Title = "VehicleModels";
 }
 
-<h2>VehicleMake</h2>
+<h2>VehicleModels</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
 
-@using (Html.BeginForm("Index", "VehicleMake", FormMethod.Get))
+@using (Html.BeginForm("Index", "VehicleModel", FormMethod.Get))
 {
     <p>
-        Search by name or abrv: @Html.TextBox("SearchString", ViewBag.CurrentFilterMake as string)
+        Search by name or abrv: @Html.TextBox("SearchString", ViewBag.CurrentFilterModel as string)
         <input type="submit" value="Search" />
     </p>
 }
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParmMake, currentFilter = ViewBag.CurrentFilterMake })
+            @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParmModel, currentFilter = ViewBag.CurrentFilterModel })
         </th>
         <th>
-            @Html.ActionLink("Abrv", "Index", new { sortOrder = ViewBag.AbrvSortParmMake, currentFilter = ViewBag.CurrentFilterMake })
+            @Html.ActionLink("Abrv", "Index", new { sortOrder = ViewBag.AbrvSortParmModel, currentFilter = ViewBag.CurrentFilterModel })
         </th>
         <th></th>
     </tr>
@@ -52,4 +52,4 @@
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 
 @Html.PagedListPager(Model, page => Url.Action("Index",
-    new { page, sortOrder = ViewBag.CurrentSortMake, currentFilter = ViewBag.CurrentFilterMake }))
+    new { page, sortOrder = ViewBag.CurrentSortModel, currentFilter = ViewBag.CurrentFilterModel }))

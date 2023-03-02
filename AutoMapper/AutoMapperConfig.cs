@@ -18,11 +18,11 @@ namespace MonoTest.MVC.AutoMapper
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.CreateMap<VehicleMake, VehicleMakeVM>();
-                    cfg.CreateMap<VehicleModel, VehicleModelVM>()
+                    cfg.CreateMap<VehicleModel, VehicleModelVM>();/*
                         .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                         .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                         .ForMember(dest => dest.Abrv, opt => opt.MapFrom(src => src.Abrv))
-                        .ForMember(dest => dest.MakeId, opt => opt.MapFrom(src => src.MakeId));
+                        .ForMember(dest => dest.MakeId, opt => opt.MapFrom(src => src.MakeId));*/
                 });
                 mapper = new Mapper(config);
 

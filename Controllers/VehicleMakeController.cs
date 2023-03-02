@@ -39,9 +39,9 @@ namespace MonoTest.MVC.Controllers
         // GET: VehicleMake
         public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            ViewBag.CurrentSort = sortOrder;
-            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewBag.AbrvSortParm = (sortOrder == "abrv") ? "abrv_desc" : "abrv";
+            ViewBag.CurrentSortMake = sortOrder;
+            ViewBag.NameSortParmMake = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.AbrvSortParmMake = (sortOrder == "abrv") ? "abrv_desc" : "abrv";
 
             if (searchString != null)
             {
@@ -52,7 +52,7 @@ namespace MonoTest.MVC.Controllers
                 searchString = currentFilter;
             }
 
-            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentFilterMake = searchString;
 
             var makes=db.VehicleMakes.AsQueryable();
 
@@ -83,7 +83,7 @@ namespace MonoTest.MVC.Controllers
             var vehicleMakes=MapVehicleMakes(makes.ToList()).ToPagedList(pageNumber, pageSize);
 
             return View(vehicleMakes);
-            //return View(makes.ToPagedList(pageNumber, pageSize));
+            
         }
 
         // GET: VehicleMake/Details/5
@@ -109,8 +109,6 @@ namespace MonoTest.MVC.Controllers
         }
 
         // POST: VehicleMake/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include = "Name,Abrv")] VehicleMake vehicleMake)
@@ -148,8 +146,6 @@ namespace MonoTest.MVC.Controllers
         }
 
         // POST: VehicleMake/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Abrv")] VehicleMake vehicleMake)
@@ -195,12 +191,11 @@ namespace MonoTest.MVC.Controllers
                 VehicleMake vehicleMake = await db.VehicleMakes.FindAsync(id);
                 db.VehicleMakes.Remove(vehicleMake);
                 await db.SaveChangesAsync();
-                return RedirectToAction("Index");
             }catch(Exception ex) 
             {
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound, ex.ToString());
             }
-            
+            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)

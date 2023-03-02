@@ -160,6 +160,7 @@
     <Compile Include="AutoMapper\AutoMapperConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\VehicleMakeController.cs" />
+    <Compile Include="Controllers\VehicleModelController.cs" />
     <Compile Include="DAL\VehicleContext.cs" />
     <Compile Include="DAL\VehicleInitializer.cs" />
     <Compile Include="Global.asax.cs">
@@ -228,6 +229,11 @@
     <Content Include="Views\VehicleMake\Details.cshtml" />
     <Content Include="Views\VehicleMake\Edit.cshtml" />
     <Content Include="Views\VehicleMake\Index.cshtml" />
+    <Content Include="Views\VehicleModel\Create.cshtml" />
+    <Content Include="Views\VehicleModel\Delete.cshtml" />
+    <Content Include="Views\VehicleModel\Details.cshtml" />
+    <Content Include="Views\VehicleModel\Edit.cshtml" />
+    <Content Include="Views\VehicleModel\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
