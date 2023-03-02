@@ -16,16 +16,22 @@
 {
     <p>
         Search by name or abrv: @Html.TextBox("SearchString", ViewBag.CurrentFilterModel as string)
+        &nbsp
+        Search by make: @Html.TextBox("SearchStringByMake", ViewBag.CurrentFilterModelByMake as string)
         <input type="submit" value="Search" />
+    </p>
+
+    <p>
+        
     </p>
 }
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParmModel, currentFilter = ViewBag.CurrentFilterModel })
+            @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParmModel, currentFilter = ViewBag.CurrentFilterModel, currentFilterByMake= ViewBag.CurrentFilterModelByMake })
         </th>
         <th>
-            @Html.ActionLink("Abrv", "Index", new { sortOrder = ViewBag.AbrvSortParmModel, currentFilter = ViewBag.CurrentFilterModel })
+            @Html.ActionLink("Abrv", "Index", new { sortOrder = ViewBag.AbrvSortParmModel, currentFilter = ViewBag.CurrentFilterModel, currentFilterByMake = ViewBag.CurrentFilterModelByMake })
         </th>
         <th></th>
     </tr>
@@ -52,4 +58,4 @@
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 
 @Html.PagedListPager(Model, page => Url.Action("Index",
-    new { page, sortOrder = ViewBag.CurrentSortModel, currentFilter = ViewBag.CurrentFilterModel }))
+    new { page, sortOrder = ViewBag.CurrentSortModel, currentFilter = ViewBag.CurrentFilterModel , currentFilterByMake = ViewBag.CurrentFilterModelByMake }))

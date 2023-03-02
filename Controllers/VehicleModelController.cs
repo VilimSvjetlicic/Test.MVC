@@ -39,7 +39,7 @@ namespace MonoTest.MVC.Controllers
         }
 
         // GET: VehicleModel
-        public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<ActionResult> Index(string sortOrder, string currentFilter, string currentFilterByMake, string searchString, string searchStringByMake, int? page)
         {
             ViewBag.CurrentSortModel = sortOrder;
             ViewBag.NameSortParmModel = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -54,7 +54,17 @@ namespace MonoTest.MVC.Controllers
                 searchString = currentFilter;
             }
 
+            if (searchStringByMake != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchStringByMake = currentFilterByMake;
+            }
+
             ViewBag.CurrentFilterModel = searchString;
+            ViewBag.CurrentFilterModelByMake = searchStringByMake;
 
             var models = db.VehicleModels.AsQueryable();
 
@@ -62,6 +72,15 @@ namespace MonoTest.MVC.Controllers
             {
                 models = models.Where(m => m.Name.Contains(searchString)
                                        || m.Abrv.Contains(searchString));
+            }
+
+            if (!String.IsNullOrEmpty(searchStringByMake))
+            {
+                var makes = db.VehicleMakes.Where(m => m.Name.Contains(searchStringByMake)
+                                        || m.Abrv.Contains(searchStringByMake)).ToList();
+                var makeIds = makes.Select(m => m.Id).ToList();
+
+                models = models.Where(m => makeIds.Contains(m.MakeId));
             }
 
             switch (sortOrder)
