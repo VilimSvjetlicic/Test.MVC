@@ -9,17 +9,81 @@ using System.Web;
 using System.Web.Mvc;
 using MonoTest.MVC.DAL;
 using MonoTest.MVC.Models;
+using AutoMapper;
+using MonoTest.MVC.Models.ViewModels;
+using MonoTest.MVC.AutoMapper;
+using static System.Net.WebRequestMethods;
+using PagedList;
 
 namespace MonoTest.MVC.Controllers
 {
     public class VehicleMakeController : Controller
     {
         private VehicleContext db = new VehicleContext();
+        private Mapper mapper = AutoMapperConfig.GetMapper();
+
+        private List<VehicleMakeVM> MapVehicleMakes(List<VehicleMake> makes)
+        {
+            List<VehicleMakeVM> makesVM = new List<VehicleMakeVM>();
+            foreach (VehicleMake make in makes)
+            {
+                makesVM.Add(MapVehicleMake(make));
+            }
+            return makesVM;
+        }
+
+        private VehicleMakeVM MapVehicleMake(VehicleMake make) {
+            return mapper.Map<VehicleMakeVM>(make);
+        }
 
         // GET: VehicleMake
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            return View(await db.VehicleMakes.ToListAsync());
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.AbrvSortParm = (sortOrder == "abrv") ? "abrv_desc" : "abrv";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
+            var makes=db.VehicleMakes.AsQueryable();
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                makes = makes.Where(s => s.Name.Contains(searchString)
+                                       || s.Abrv.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    makes = makes.OrderByDescending(m => m.Name);
+                    break;
+                case "abrv":
+                    makes = makes.OrderBy(m => m.Abrv);
+                    break;
+                case "abrv_desc":
+                    makes = makes.OrderByDescending(m => m.Abrv);
+                    break;
+                default:
+                    makes = makes.OrderBy(m => m.Name);
+                    break;
+            }
+            int pageSize = 3;
+            int pageNumber = (page ?? 1);
+
+            var vehicleMakes=MapVehicleMakes(makes.ToList()).ToPagedList(pageNumber, pageSize);
+
+            return View(vehicleMakes);
+            //return View(makes.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: VehicleMake/Details/5
@@ -34,7 +98,8 @@ namespace MonoTest.MVC.Controllers
             {
                 return HttpNotFound();
             }
-            return View(vehicleMake);
+
+            return View(MapVehicleMake(vehicleMake));
         }
 
         // GET: VehicleMake/Create
@@ -48,16 +113,23 @@ namespace MonoTest.MVC.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Name,Abrv")] VehicleMake vehicleMake)
+        public async Task<ActionResult> Create([Bind(Include = "Name,Abrv")] VehicleMake vehicleMake)
         {
-            if (ModelState.IsValid)
+            try 
             {
-                db.VehicleMakes.Add(vehicleMake);
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.VehicleMakes.Add(vehicleMake);
+                    await db.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
+
+            }catch (Exception ex)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.NotModified, ex.ToString());
             }
 
-            return View(vehicleMake);
+            return View(MapVehicleMake(vehicleMake));
         }
 
         // GET: VehicleMake/Edit/5
@@ -72,7 +144,7 @@ namespace MonoTest.MVC.Controllers
             {
                 return HttpNotFound();
             }
-            return View(vehicleMake);
+            return View(MapVehicleMake(vehicleMake));
         }
 
         // POST: VehicleMake/Edit/5
@@ -84,11 +156,18 @@ namespace MonoTest.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(vehicleMake).State = EntityState.Modified;
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                try 
+                {
+                    db.Entry(vehicleMake).State = EntityState.Modified;
+                    await db.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
+                catch(Exception ex) 
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ex.ToString());
+                }               
             }
-            return View(vehicleMake);
+            return View(MapVehicleMake(vehicleMake));
         }
 
         // GET: VehicleMake/Delete/5
@@ -103,7 +182,7 @@ namespace MonoTest.MVC.Controllers
             {
                 return HttpNotFound();
             }
-            return View(vehicleMake);
+            return View(MapVehicleMake(vehicleMake));
         }
 
         // POST: VehicleMake/Delete/5
@@ -111,10 +190,17 @@ namespace MonoTest.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            VehicleMake vehicleMake = await db.VehicleMakes.FindAsync(id);
-            db.VehicleMakes.Remove(vehicleMake);
-            await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+            try
+            {
+                VehicleMake vehicleMake = await db.VehicleMakes.FindAsync(id);
+                db.VehicleMakes.Remove(vehicleMake);
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }catch(Exception ex) 
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound, ex.ToString());
+            }
+            
         }
 
         protected override void Dispose(bool disposing)

@@ -1,4 +1,4 @@
-﻿@model MonoTest.MVC.Models.VehicleMake
+﻿@model MonoTest.MVC.Models.ViewModels.VehicleMakeVM
 
 @{
     ViewBag.Title = "Details";
@@ -24,6 +24,14 @@
 
         <dd>
             @Html.DisplayFor(model => model.Abrv)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Id)
         </dd>
 
     </dl>
